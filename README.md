@@ -3,10 +3,13 @@
  
 ## Setup Instructions
 1. Install Anaconda and create a new environment using the provided _requirements.txt_ file.
-2. Activate the environment and run the app from the command line using _python app.py_
+2. Activate the environment and startup the app from the command line using _python app.py_. Specify your ip and a port to provide access from other machines in your local network. Remember to allow connections through that port in your firewall whitelist.
 
 Optional: 
 If you want to deploy this in a production environment, e.g. on the web, use Gunicorn/Heroku. 
+
+## Future features
+* Set thresholds for red / yellow / green in a config file. 
  
 ## Screenshots
 ### Histogram view
