@@ -6,10 +6,11 @@
 2. Activate the environment and startup the app from the command line using _python app.py_. Specify your ip and a port to provide access from other machines in your local network. Remember to allow connections through that port in your firewall whitelist.
 
 Optional: 
-If you want to deploy this in a production environment, e.g. on the web, use Gunicorn/Heroku. 
+If you want to deploy in a production environment, e.g. on the web, use Gunicorn/Heroku. 
 
 ## Known issues
 * Color scale in the table is hardcoded for the thresholds for single CV runs. Still need to figure out how to make it adapt to 
+* Dateplots do not always resize correctly. Resizing the window and then maximizing again usually works as a workaround.
 
 ## Future features
 * Set thresholds for red / yellow / green in a config file. 
