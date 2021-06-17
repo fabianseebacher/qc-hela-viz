@@ -3,6 +3,7 @@ import dash_bootstrap_components as dbc
 import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
+import yaml
 
 from app import app
 from apps import explorer, qc
@@ -58,7 +59,9 @@ def display_page(pathname):
         return '404'
 
 if __name__ == '__main__':
-    app.run_server(debug=False, host="146.107.176.137", port="8052")  
+    with open("settings.yml", 'r') as stream:
+        settings = yaml.safe_load(stream)
+    app.run_server(debug=False, host=settings['ip'], port=settings['port']) 
 
 ##############
 
