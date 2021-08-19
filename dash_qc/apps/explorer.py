@@ -126,7 +126,7 @@ def update_graph(xaxis_column_name, yaxis_column_name,
                      hover_name=dff['Filename'],
                      color=dff[str(color_column_name)])
 
-    fig.update_layout(margin={'l': 40, 'b': 40, 't': 10, 'r': 0}, hovermode='closest')
+    fig.update_layout(margin={'l': 40, 'b': 40, 't': 10, 'r': 0}, hovermode='closest', uirevision=True)
 
     fig.update_xaxes(title=xaxis_column_name,
                      type=str(xaxis_type).lower())

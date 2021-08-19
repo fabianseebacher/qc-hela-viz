@@ -61,7 +61,7 @@ def display_page(pathname):
 if __name__ == '__main__':
     with open("settings.yml", 'r') as stream:
         settings = yaml.safe_load(stream)
-    app.run_server(debug=False, host=settings['ip'], port=settings['port']) 
+    app.run_server(debug=False, host=settings['ip'], port=int(settings['port']))
 
 ##############
 
