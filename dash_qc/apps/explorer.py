@@ -10,8 +10,8 @@ from app import app
 df = pd.read_excel("N:\IDO_Proteomics_CellBiol\Temporary Backup_MS PC_Drive D/hela_auto.xlsx", engine='openpyxl')
 df['date created'] =  pd.to_datetime(df['date created'])
 
-df2 = df
-df2 = df2.rename(columns={'Peptide Seq Identified': 'Peptides', 'Retention length [s]': 'RetLen'})
+#df2 = df
+#df = df.rename(columns={'Peptide Seq Identified': 'Peptides', 'Retention length [s]': 'RetLen'})
 
 layout = html.Div([
 
@@ -42,16 +42,12 @@ layout = html.Div([
             html.Label(["Select x axis data"]),
             dcc.Dropdown(
                 id='xaxis-column',
-                options=[{'label': i, 'value': i} for i in ['MS', 'MS/MS', 'MS2/MS1 ratio', 
-                    'Peptide Seq Identified', 'ProteinGroups', 'Uncalibrated mass error [ppm]',
-                    'Retention length [s]', 'MS TIC', 'MS Base peak intensity', 'MS/MS TIC', 
-                    'MS/MS Base peak intensity', 'date created', 'File size [MB]'
-                    ]],
+                options=[{'label': i, 'value': i} for i in df.columns.tolist()],
                 value='Peptide Seq Identified'
             ),
             dcc.RadioItems(
                 id='xaxis-type',
-                options=[{'label': i, 'value': i} for i in ['Linear', 'Log', 'Date']],
+                options=[{'label': i, 'value': i} for i in ['Linear', 'Log', 'Date', 'Category']],
                 value='Linear',
                 labelStyle={'display': 'inline-block'}
             )
@@ -62,16 +58,12 @@ layout = html.Div([
             html.Label(["Select y axis data"]),
             dcc.Dropdown(
                 id='yaxis-column',
-                options=[{'label': i, 'value': i} for i in ['MS', 'MS/MS', 'MS2/MS1 ratio', 
-                    'Peptide Seq Identified', 'ProteinGroups', 'Uncalibrated mass error [ppm]',
-                    'Retention length [s]', 'MS TIC', 'MS Base peak intensity', 'MS/MS TIC', 
-                    'MS/MS Base peak intensity', 'date created', 'File size [MB]'
-                    ]],
+                options=[{'label': i, 'value': i} for i in  df.columns.tolist()],
                 value='ProteinGroups'
             ),
             dcc.RadioItems(
                 id='yaxis-type',
-                options=[{'label': i, 'value': i} for i in ['Linear', 'Log', 'Date']],
+                options=[{'label': i, 'value': i} for i in ['Linear', 'Log', 'Date', 'Category']],
                 value='Linear',
                 labelStyle={'display': 'inline-block'}
             )
@@ -85,8 +77,7 @@ layout = html.Div([
             html.Label(["Select column for color coding"]),
             dcc.Dropdown(
                 id='color-column',
-                options=[{'label': i, 'value': i} for i in ['gradient length', 'producer', 'FAIMS', 'amount', 'Retention length [s]'
-                    ]],
+                options=[{'label': i, 'value': i} for i in  df.columns.tolist()],
                 value='FAIMS'
             )
             
@@ -97,7 +88,6 @@ layout = html.Div([
     dcc.Graph(id='indicator-graphic'),
 
 ])
-
 
 @app.callback(
     Output('indicator-graphic', 'figure'),
@@ -112,6 +102,7 @@ def update_graph(xaxis_column_name, yaxis_column_name,
 
     df = pd.read_excel("N:\IDO_Proteomics_CellBiol\Temporary Backup_MS PC_Drive D/hela_auto.xlsx", engine='openpyxl')
     df['date created'] =  pd.to_datetime(df['date created'])
+    #df = df.rename(columns={'Peptide Seq Identified': 'Peptides', 'Retention length [s]': 'RetLen'})
     if filter == "2cv":
         dff = df[(df['amount'] == 500) & (df['producer'] == 'CPMS') & (df['FAIMS'] == '2CV') & (df['gradient length'] == '2h')]
     elif filter == "nofaims":
