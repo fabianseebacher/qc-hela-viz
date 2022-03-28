@@ -1,3 +1,4 @@
+from re import A
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
@@ -151,8 +152,9 @@ def style_dateplot(fig, filter, column_name, lowcut, highcut, min_pg, max_pg, di
 
 df = pd.read_excel("N:\IDO_Proteomics_CellBiol\Temporary Backup_MS PC_Drive D/hela_auto.xlsx", engine='openpyxl')
 df['date created'] =  pd.to_datetime(df['date created'])
+df = df[(df['amount'] == 500) & (df['producer'] == 'CPMS') & (df['FAIMS'] == '1CV') & (df['gradient length'] == '2h')]
 
-df2 = df
+df2 = df.sort_values('date created', ascending=False)
 df2 = df2.rename(columns={'Peptide Seq Identified': 'Peptides', 'Retention length [s]': 'RetLen'})
 
 ### LAYOUT ###
@@ -170,7 +172,8 @@ layout = html.Div([
                         {'label': 'all', 'value': 'all'},
                         {'label': 'noFAIMS/500ng/CPMS/2h only', 'value': 'nofaims'},
                         {'label': '1CV/500ng/CPMS/2h only', 'value': '1cv'},
-                        {'label': '2CV/500ng/CPMS/2h only', 'value': '2cv'}
+                        {'label': '1CV/500ng/CPMS/1h only', 'value': '1cv_short'},
+                        {'label': '2CV/500ng/CPMS/2h only', 'value': '2cv'}   
                     ],
                     value='1cv',
                     clearable=False
@@ -359,8 +362,14 @@ def update_pg_graph(filter):
         dff = df[(df['amount'] == 500) & (df['producer'] == 'CPMS') & (df['FAIMS'] == '1CV') & (df['gradient length'] == '2h')]
         lowcut = 5000
         highcut = 5200
+    elif filter == "1cv_short":
+        dff = df[(df['amount'] == 500) & (df['producer'] == 'CPMS') & (df['FAIMS'] == '1CV') & (df['gradient length'] == '1h')]
+        lowcut = 4200
+        highcut = 4400
     elif filter == 'all':
         dff = df
+        highcut, lowcut = None, None
+
 
     min_pg = dff['ProteinGroups'].min()
     max_pg = dff['ProteinGroups'].max()
@@ -375,8 +384,6 @@ def update_pg_graph(filter):
     style_histo(fig, filter, column_name, lowcut, highcut, min_pg, max_pg, newest_pg, 100, reverse=False)
 
     # fig2
-
-    
 
     fig2 = px.scatter(x=df_new5['date created'][::-1],
                      y=df_new5['ProteinGroups'][::-1],
@@ -408,8 +415,13 @@ def update_pept_graph(filter):
         dff = df[(df['amount'] == 500) & (df['producer'] == 'CPMS') & (df['FAIMS'] == '1CV') & (df['gradient length'] == '2h')]
         lowcut = 23000
         highcut = 25000
+    elif filter == "1cv_short":
+        dff = df[(df['amount'] == 500) & (df['producer'] == 'CPMS') & (df['FAIMS'] == '1CV') & (df['gradient length'] == '1h')]
+        lowcut = 16000
+        highcut = 18000
     elif filter == 'all':
         dff = df
+        highcut, lowcut = None, None
 
     column_name = 'Peptide Seq Identified'
     min_pg = dff['Peptide Seq Identified'].min()
@@ -454,7 +466,12 @@ def update_rl_graph(filter):
         dff = df[(df['amount'] == 500) & (df['producer'] == 'CPMS') & (df['FAIMS'] == '1CV') & (df['gradient length'] == '2h')]
         lowcut = 20
         highcut = 22
+    elif filter == "1cv_short":
+        dff = df[(df['amount'] == 500) & (df['producer'] == 'CPMS') & (df['FAIMS'] == '1CV') & (df['gradient length'] == '1h')]
+        lowcut = 12
+        highcut = 14
     elif filter == 'all':
+        highcut, lowcut = None, None
         dff = df
 
     column_name = 'Retention length [s]'
@@ -481,20 +498,109 @@ def update_rl_graph(filter):
     return [fig,fig2]
 
 @app.callback(
-    dash.dependencies.Output('table', 'data'),
+    [dash.dependencies.Output('table', 'data'), dash.dependencies.Output('table', 'style_data_conditional')],
     [dash.dependencies.Input('filter-dropdown', 'value')])
 def update_table(filter):
     ### Filter table to only show the data corresponding to the dropdown filter.
     df = pd.read_excel("N:\IDO_Proteomics_CellBiol\Temporary Backup_MS PC_Drive D/hela_auto.xlsx", engine='openpyxl')
+    tlist = [5200, 5000, 25000, 23000, 22, 20]
     df['date created'] =  pd.to_datetime(df['date created'])
     if filter == "2cv":
         df3 = df[(df['amount'] == 500) & (df['producer'] == 'CPMS') & (df['FAIMS'] == '2CV') & (df['gradient length'] == '2h')]
+        tlist = [5500, 5300, 35000, 32000, 30, 27]
     elif filter == "nofaims":
         df3 = df[(df['amount'] == 500) & (df['producer'] == 'CPMS') & (df['FAIMS'] == 'noFAIMS') & (df['gradient length'] == '2h')]
+        tlist = [4500, 4800, 30000, 28000, 22, 20]
     elif filter == "1cv":
         df3 = df[(df['amount'] == 500) & (df['producer'] == 'CPMS') & (df['FAIMS'] == '1CV') & (df['gradient length'] == '2h')]
+        tlist = [5200, 5000, 25000, 23000, 22, 20]
+    elif filter == "1cv_short":
+        df3 = df[(df['amount'] == 500) & (df['producer'] == 'CPMS') & (df['FAIMS'] == '1CV') & (df['gradient length'] == '1h')]
+        tlist = [4400, 4200, 18000, 16000, 14, 12]
     else:
         df3 = df
-    return df3.rename(columns={'Peptide Seq Identified': 'Peptides', 'Retention length [s]': 'RetLen'}).sort_values('date created', ascending=False).head(5).to_dict('records')
 
+    if filter == 'all':
+        current_style = None
+    else:
+        current_style = [
+            {
+                        'if': {
+                            'column_id': 'ProteinGroups',
+                        },
+                        'backgroundColor': 'lightgoldenrodyellow',
+                        'color': 'black'
+                    },
+                    {
+                        'if': {
+                            'filter_query': '{ProteinGroups} > '+str(tlist[0]),
+                            'column_id': 'ProteinGroups'
+                        },
+                        'backgroundColor': 'lightgreen',
+                        'color': 'black'
+                    },
+
+                    {
+                        'if': {
+                            'filter_query': '{ProteinGroups} < '+str(tlist[1]),
+                            'column_id': 'ProteinGroups'
+                        },
+                        'backgroundColor': 'lightpink',
+                        'color': 'black'
+                    },
+
+                    {
+                        'if': {
+                            'column_id': 'Peptides',
+                        },
+                        'backgroundColor': 'lightgoldenrodyellow',
+                        'color': 'black'
+                    },
+
+                    {
+                        'if': {
+                            'filter_query': '{Peptides} > '+str(tlist[2]),
+                            'column_id': 'Peptides'
+                        },
+                        'backgroundColor': 'lightgreen',
+                        'color': 'black'
+                    },
+
+                    {
+                        'if': {
+                            'filter_query': '{Peptides} < '+str(tlist[3]),
+                            'column_id': 'Peptides'
+                        },
+                        'backgroundColor': 'lightpink',
+                        'color': 'black'
+                    },
+
+                    {
+                        'if': {
+                            'column_id': 'RetLen',
+                        },
+                        'backgroundColor': 'lightgoldenrodyellow',
+                        'color': 'black'
+                    },
+
+                    {
+                        'if': {
+                            'filter_query': '{RetLen} > '+str(tlist[4]),
+                            'column_id': 'RetLen'
+                        },
+                        'backgroundColor': 'lightpink',
+                        'color': 'black'
+                    },
+
+                    {
+                        'if': {
+                            'filter_query': '{RetLen} < '+str(tlist[5]),
+                            'column_id': 'RetLen'
+                        },
+                        'backgroundColor': 'lightgreen',
+                        'color': 'black'
+                    }
+        ]
+    
+    return [df3.rename(columns={'Peptide Seq Identified': 'Peptides', 'Retention length [s]': 'RetLen'}).sort_values('date created', ascending=False).head(5).to_dict('records'), current_style]
 

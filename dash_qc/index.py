@@ -6,7 +6,7 @@ from dash.dependencies import Input, Output
 import yaml
 
 from app import app
-from apps import explorer, qc
+from apps import explorer, qc, cols
 
 
 # the style arguments for the sidebar. We use position:fixed and a fixed width
@@ -36,6 +36,7 @@ sidebar = html.Div(
             [
                 dbc.NavLink("Live View", href="/apps/qc", active="exact", external_link=True),
                 dbc.NavLink("Explorer", href="/apps/explorer", active="exact", external_link=True),
+                dbc.NavLink("Columns", href="/apps/cols", active="exact", external_link=True),
             ],
             vertical=True,
             pills=True,
@@ -55,6 +56,8 @@ def display_page(pathname):
         return explorer.layout
     elif pathname == '/apps/qc':
         return qc.layout
+    elif pathname == '/apps/cols':
+        return cols.layout
     else:
         return '404'
 
