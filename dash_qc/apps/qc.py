@@ -364,8 +364,8 @@ def update_pg_graph(filter):
         highcut = 5200
     elif filter == "1cv_short":
         dff = df[(df['amount'] == 500) & (df['producer'] == 'CPMS') & (df['FAIMS'] == '1CV') & (df['gradient length'] == '1h')]
-        lowcut = 4200
-        highcut = 4400
+        lowcut = 4100
+        highcut = 4300
     elif filter == 'all':
         dff = df
         highcut, lowcut = None, None
@@ -417,8 +417,8 @@ def update_pept_graph(filter):
         highcut = 25000
     elif filter == "1cv_short":
         dff = df[(df['amount'] == 500) & (df['producer'] == 'CPMS') & (df['FAIMS'] == '1CV') & (df['gradient length'] == '1h')]
-        lowcut = 16000
-        highcut = 18000
+        lowcut = 16500
+        highcut = 17500
     elif filter == 'all':
         dff = df
         highcut, lowcut = None, None
@@ -469,7 +469,7 @@ def update_rl_graph(filter):
     elif filter == "1cv_short":
         dff = df[(df['amount'] == 500) & (df['producer'] == 'CPMS') & (df['FAIMS'] == '1CV') & (df['gradient length'] == '1h')]
         lowcut = 12
-        highcut = 14
+        highcut = 13
     elif filter == 'all':
         highcut, lowcut = None, None
         dff = df
@@ -477,13 +477,14 @@ def update_rl_graph(filter):
     column_name = 'Retention length [s]'
     min_pg = dff['Retention length [s]'].min()
     max_pg = dff['Retention length [s]'].max()
-    newest_pg = int(dff.sort_values('date created', ascending=False).head(1)['Retention length [s]'])
+    newest_pg = float(dff.sort_values('date created', ascending=False).head(1)['Retention length [s]'])
     df_new5 = dff.sort_values('date created', ascending=False).head(5).reset_index()
     df_new5.index = df_new5.index + 1
     
     fig = px.histogram(dff, x='Retention length [s]', nbins=40, color_discrete_sequence=['lightgrey'])
 
     style_histo(fig, filter, column_name, lowcut, highcut, min_pg, max_pg, newest_pg, 10, reverse=True)
+    print(newest_pg)
 
     # Fig2
 
@@ -516,7 +517,7 @@ def update_table(filter):
         tlist = [5200, 5000, 25000, 23000, 22, 20]
     elif filter == "1cv_short":
         df3 = df[(df['amount'] == 500) & (df['producer'] == 'CPMS') & (df['FAIMS'] == '1CV') & (df['gradient length'] == '1h')]
-        tlist = [4400, 4200, 18000, 16000, 14, 12]
+        tlist = [4300, 4100, 17500, 16500, 13, 12]
     else:
         df3 = df
 
