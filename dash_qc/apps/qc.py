@@ -8,6 +8,7 @@ import plotly.express as px
 import pandas as pd
 import dash_daq as daq
 import dash_table as dat
+import yaml
 
 from app import app
 
@@ -344,182 +345,105 @@ def show_hide_histo(visibility_state):
 # Update protein group graphs
 @app.callback(
     [Output('pg-graphic-histo', 'figure'),
-    Output('pg-graphic-date', 'figure')],
-    [Input('filter-dropdown', 'value')])
-def update_pg_graph(filter):
-    df = pd.read_excel("N:\IDO_Proteomics_CellBiol\Temporary Backup_MS PC_Drive D/hela_auto.xlsx", engine='openpyxl')
-    df['date created'] =  pd.to_datetime(df['date created'])
-
-    if filter == "2cv":
-        dff = df[(df['amount'] == 500) & (df['producer'] == 'CPMS') & (df['FAIMS'] == '2CV') & (df['gradient length'] == '2h')]
-        lowcut = 5300
-        highcut = 5500
-    elif filter == "nofaims":
-        dff = df[(df['amount'] == 500) & (df['producer'] == 'CPMS') & (df['FAIMS'] == 'noFAIMS') & (df['gradient length'] == '2h')]
-        lowcut = 4500
-        highcut = 4800
-    elif filter == "1cv":
-        dff = df[(df['amount'] == 500) & (df['producer'] == 'CPMS') & (df['FAIMS'] == '1CV') & (df['gradient length'] == '2h')]
-        lowcut = 5000
-        highcut = 5200
-    elif filter == "1cv_short":
-        dff = df[(df['amount'] == 500) & (df['producer'] == 'CPMS') & (df['FAIMS'] == '1CV') & (df['gradient length'] == '1h')]
-        lowcut = 4100
-        highcut = 4300
-    elif filter == 'all':
-        dff = df
-        highcut, lowcut = None, None
-
-
-    min_pg = dff['ProteinGroups'].min()
-    max_pg = dff['ProteinGroups'].max()
-    newest_pg = int(dff.sort_values('date created', ascending=False).head(1)['ProteinGroups'])
-    df_new5 = dff.sort_values('date created', ascending=False).head(5).reset_index()
-    df_new5.index = df_new5.index + 1
-
-    # fig1
-
-    fig = px.histogram(dff, x='ProteinGroups', nbins=40, color_discrete_sequence=['lightgrey'])
-    column_name = 'ProteinGroups'
-    style_histo(fig, filter, column_name, lowcut, highcut, min_pg, max_pg, newest_pg, 100, reverse=False)
-
-    # fig2
-
-    fig2 = px.scatter(x=df_new5['date created'][::-1],
-                     y=df_new5['ProteinGroups'][::-1],
-                     hover_name=df_new5['Filename'],
-                     color_discrete_sequence=['grey'])
-    style_dateplot(fig2, filter, column_name, lowcut, highcut, min_pg, max_pg, 100, reverse=False)
-
-    return [fig,fig2]
-
-# Update peptide graphs
-@app.callback(
-    [Output('pept-graphic-histo', 'figure'),
-    Output('pept-graphic-date', 'figure')],
-    [Input('filter-dropdown', 'value')])
-def update_pept_graph(filter):
-
-    df = pd.read_excel("N:\IDO_Proteomics_CellBiol\Temporary Backup_MS PC_Drive D/hela_auto.xlsx", engine='openpyxl')
-    df['date created'] =  pd.to_datetime(df['date created'])
-
-    if filter == "2cv":
-        dff = df[(df['amount'] == 500) & (df['producer'] == 'CPMS') & (df['FAIMS'] == '2CV') & (df['gradient length'] == '2h')]
-        lowcut = 32000
-        highcut = 35000
-    elif filter == "nofaims":
-        dff = df[(df['amount'] == 500) & (df['producer'] == 'CPMS') & (df['FAIMS'] == 'noFAIMS') & (df['gradient length'] == '2h')]
-        lowcut = 28000
-        highcut = 30000
-    elif filter == "1cv":
-        dff = df[(df['amount'] == 500) & (df['producer'] == 'CPMS') & (df['FAIMS'] == '1CV') & (df['gradient length'] == '2h')]
-        lowcut = 23000
-        highcut = 25000
-    elif filter == "1cv_short":
-        dff = df[(df['amount'] == 500) & (df['producer'] == 'CPMS') & (df['FAIMS'] == '1CV') & (df['gradient length'] == '1h')]
-        lowcut = 16500
-        highcut = 17500
-    elif filter == 'all':
-        dff = df
-        highcut, lowcut = None, None
-
-    column_name = 'Peptide Seq Identified'
-    min_pg = dff['Peptide Seq Identified'].min()
-    max_pg = dff['Peptide Seq Identified'].max()
-    newest_pg = int(dff.sort_values('date created', ascending=False).head(1)['Peptide Seq Identified'])
-    df_new5 = dff.sort_values('date created', ascending=False).head(5).reset_index()
-    df_new5.index = df_new5.index + 1
-
-    fig = px.histogram(dff, x='Peptide Seq Identified', nbins=40, color_discrete_sequence=['lightgrey'])
-    
-    style_histo(fig, filter, column_name, lowcut, highcut, min_pg, max_pg, newest_pg, 1000, reverse=False)
-    
-    # Fig2
-    
-    fig2 = px.scatter(x=df_new5['date created'][::-1],
-                     y=df_new5['Peptide Seq Identified'][::-1],
-                     hover_name=df_new5['Filename'],
-                     color_discrete_sequence=['grey'])
-    style_dateplot(fig2, filter, column_name, lowcut, highcut, min_pg, max_pg, 1000, reverse=False)
-
-    return [fig,fig2]
-
-# Update retention length graphs
-@app.callback(
-    [Output('rl-graphic-histo', 'figure'),
+    Output('pg-graphic-date', 'figure'),
+    Output('pept-graphic-histo', 'figure'),
+    Output('pept-graphic-date', 'figure'),
+    Output('rl-graphic-histo', 'figure'),
     Output('rl-graphic-date', 'figure')],
     [Input('filter-dropdown', 'value')])
-def update_rl_graph(filter):
+def update_pg_graph(filter):
+
+    with open("settings.yml", 'r') as stream:
+        settings = yaml.safe_load(stream)
 
     df = pd.read_excel("N:\IDO_Proteomics_CellBiol\Temporary Backup_MS PC_Drive D/hela_auto.xlsx", engine='openpyxl')
     df['date created'] =  pd.to_datetime(df['date created'])
 
     if filter == "2cv":
         dff = df[(df['amount'] == 500) & (df['producer'] == 'CPMS') & (df['FAIMS'] == '2CV') & (df['gradient length'] == '2h')]
-        lowcut = 27
-        highcut = 30
+        thresholds = settings['2cv_2h_thresholds']
     elif filter == "nofaims":
         dff = df[(df['amount'] == 500) & (df['producer'] == 'CPMS') & (df['FAIMS'] == 'noFAIMS') & (df['gradient length'] == '2h')]
-        lowcut = 20
-        highcut = 22
+        thresholds = settings['nofaims_2h_thresholds']
     elif filter == "1cv":
         dff = df[(df['amount'] == 500) & (df['producer'] == 'CPMS') & (df['FAIMS'] == '1CV') & (df['gradient length'] == '2h')]
-        lowcut = 20
-        highcut = 22
+        thresholds = settings['1cv_2h_thresholds']
     elif filter == "1cv_short":
         dff = df[(df['amount'] == 500) & (df['producer'] == 'CPMS') & (df['FAIMS'] == '1CV') & (df['gradient length'] == '1h')]
-        lowcut = 12
-        highcut = 13
+        thresholds = settings['1cv_1h_thresholds']
     elif filter == 'all':
-        highcut, lowcut = None, None
         dff = df
+        thresholds = settings['all_thresholds']
 
-    column_name = 'Retention length [s]'
-    min_pg = dff['Retention length [s]'].min()
-    max_pg = dff['Retention length [s]'].max()
-    newest_pg = float(dff.sort_values('date created', ascending=False).head(1)['Retention length [s]'])
+    min_prot = dff['ProteinGroups'].min()
+    max_prot = dff['ProteinGroups'].max()
+    newest_prot = int(dff.sort_values('date created', ascending=False).head(1)['ProteinGroups'])
+    
+    min_pept = dff['Peptide Seq Identified'].min()
+    max_pept = dff['Peptide Seq Identified'].max()
+    newest_pept = int(dff.sort_values('date created', ascending=False).head(1)['Peptide Seq Identified'])
+
+    min_rt = dff['Retention length [s]'].min()
+    max_rt = dff['Retention length [s]'].max()
+    newest_rt = float(dff.sort_values('date created', ascending=False).head(1)['Retention length [s]'])
+
+
     df_new5 = dff.sort_values('date created', ascending=False).head(5).reset_index()
     df_new5.index = df_new5.index + 1
+
+    # proteins histogram
+    fig = px.histogram(dff, x='ProteinGroups', nbins=40, color_discrete_sequence=['lightgrey'])
+    style_histo(fig, filter, 'ProteinGroups', thresholds[1], thresholds[0], min_prot, max_prot, newest_prot, 100, reverse=False)
+
+    # proteins dateplot
+    fig2 = px.scatter(x=df_new5['date created'][::-1], y=df_new5['ProteinGroups'][::-1], hover_name=df_new5['Filename'], color_discrete_sequence=['grey'])
+    style_dateplot(fig2, filter, 'ProteinGroups', thresholds[1], thresholds[0], min_prot, max_prot, 100, reverse=False)
+
+    # peptide histogram
+    fig3 = px.histogram(dff, x='Peptide Seq Identified', nbins=40, color_discrete_sequence=['lightgrey'])
+    style_histo(fig3, filter, 'Peptide Seq Identified', thresholds[3], thresholds[2], min_pept, max_pept, newest_pept, 1000, reverse=False)
     
-    fig = px.histogram(dff, x='Retention length [s]', nbins=40, color_discrete_sequence=['lightgrey'])
+    # peptide dateplot
+    fig4 = px.scatter(x=df_new5['date created'][::-1], y=df_new5['Peptide Seq Identified'][::-1], hover_name=df_new5['Filename'], color_discrete_sequence=['grey'])
+    style_dateplot(fig4, filter, 'Peptide Seq Identified', thresholds[3], thresholds[2], min_pept, max_pept, 1000, reverse=False)
 
-    style_histo(fig, filter, column_name, lowcut, highcut, min_pg, max_pg, newest_pg, 10, reverse=True)
-    print(newest_pg)
+    # retention length histogram
+    fig5 = px.histogram(dff, x='Retention length [s]', nbins=40, color_discrete_sequence=['lightgrey'])
+    style_histo(fig5, filter, 'Retention length [s]', thresholds[5], thresholds[4], min_rt, max_rt, newest_rt, 10, reverse=True)
 
-    # Fig2
+    # retention length dateplot
+    fig6 = px.scatter(x=df_new5['date created'][::-1], y=df_new5['Retention length [s]'][::-1], hover_name=df_new5['Filename'], color_discrete_sequence=['grey'])
+    style_dateplot(fig6, filter, 'Retention length [s]', thresholds[5], thresholds[4], min_rt, max_rt, 10, reverse=True)
 
-    fig2 = px.scatter(x=df_new5['date created'][::-1],
-                     y=df_new5['Retention length [s]'][::-1],
-                     hover_name=df_new5['Filename'],
-                     color_discrete_sequence=['grey']
-                     )
-
-    style_dateplot(fig2, filter, column_name, lowcut, highcut, min_pg, max_pg, 10, reverse=True)
-
-    return [fig,fig2]
+    return [fig,fig2,fig3,fig4,fig5,fig6]
 
 @app.callback(
     [dash.dependencies.Output('table', 'data'), dash.dependencies.Output('table', 'style_data_conditional')],
     [dash.dependencies.Input('filter-dropdown', 'value')])
 def update_table(filter):
+    
+    with open("settings.yml", 'r') as stream:
+        settings = yaml.safe_load(stream)
+
     ### Filter table to only show the data corresponding to the dropdown filter.
     df = pd.read_excel("N:\IDO_Proteomics_CellBiol\Temporary Backup_MS PC_Drive D/hela_auto.xlsx", engine='openpyxl')
     tlist = [5200, 5000, 25000, 23000, 22, 20]
     df['date created'] =  pd.to_datetime(df['date created'])
     if filter == "2cv":
         df3 = df[(df['amount'] == 500) & (df['producer'] == 'CPMS') & (df['FAIMS'] == '2CV') & (df['gradient length'] == '2h')]
-        tlist = [5500, 5300, 35000, 32000, 30, 27]
+        tlist = settings['2cv_2h_thresholds']
     elif filter == "nofaims":
         df3 = df[(df['amount'] == 500) & (df['producer'] == 'CPMS') & (df['FAIMS'] == 'noFAIMS') & (df['gradient length'] == '2h')]
-        tlist = [4500, 4800, 30000, 28000, 22, 20]
+        tlist = settings['nofaims_2h_thresholds']
     elif filter == "1cv":
         df3 = df[(df['amount'] == 500) & (df['producer'] == 'CPMS') & (df['FAIMS'] == '1CV') & (df['gradient length'] == '2h')]
-        tlist = [5200, 5000, 25000, 23000, 22, 20]
+        tlist = settings['1cv_2h_thresholds']
     elif filter == "1cv_short":
         df3 = df[(df['amount'] == 500) & (df['producer'] == 'CPMS') & (df['FAIMS'] == '1CV') & (df['gradient length'] == '1h')]
-        tlist = [4300, 4100, 17500, 16500, 13, 12]
+        tlist = settings['1cv_1h_thresholds']
     else:
         df3 = df
+        tlist = settings['all_thresholds']
 
     if filter == 'all':
         current_style = None

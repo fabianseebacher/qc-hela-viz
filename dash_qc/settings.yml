@@ -1,2 +1,54 @@
 ip: "146.107.176.137"
 port: "8052"
+
+# Thresholds are ordered like this [prot_highcut, prot_lowcut, pept_highcut, pept_lowcut, rt_highcut, rt_lowcut]
+
+# Thresholds for 1cv / 2h:
+
+1cv_2h_thresholds:
+  - 5200
+  - 5000
+  - 25000
+  - 23000
+  - 22
+  - 20
+
+# Thresholds for 1cv / 1h:
+
+1cv_1h_thresholds:
+  - 4300
+  - 4100
+  - 17500
+  - 16500
+  - 13
+  - 12
+
+# Thresholds for 2cv / 2h:
+
+2cv_2h_thresholds:
+  - 5500
+  - 5300
+  - 35000
+  - 32000
+  - 30
+  - 27
+
+# Thresholds for noFAIMS / 2h:
+
+nofaims_2h_thresholds:
+  - 4500
+  - 4800
+  - 30000
+  - 28000
+  - 22
+  - 20
+
+# Thresholds for all:
+
+all_thresholds:
+  - None
+  - None
+  - None
+  - None
+  - None
+  - None
