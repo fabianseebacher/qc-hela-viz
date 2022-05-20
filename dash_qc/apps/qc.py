@@ -12,15 +12,18 @@ import yaml
 
 from app import app
 
+with open("settings.yml", 'r') as stream:
+        settings = yaml.safe_load(stream)
+
 ### HELPER FUNCIONS ###
 def style_histo(fig, filter, column_name, lowcut, highcut, min_pg, max_pg, newest_pg, divisor, reverse=False):
 
     if reverse == True:
-        highcolor = 'red'
-        lowcolor = 'green'
+        highcolor = settings['colorscheme']['badcolor']
+        lowcolor = settings['colorscheme']['goodcolor']
     else:
-        highcolor = 'green'
-        lowcolor = 'red'
+        highcolor = settings['colorscheme']['goodcolor']
+        lowcolor = settings['colorscheme']['badcolor']
 
     fig.update_layout(plot_bgcolor='white', 
             margin={'l': 40, 'b': 40, 't': 10, 'r': 0}, 
@@ -36,16 +39,16 @@ def style_histo(fig, filter, column_name, lowcut, highcut, min_pg, max_pg, newes
                      showgrid=True,
                      gridcolor='lightgrey')
 
-    # Draw green, yellow and red areas to quickly assess relative quality.
+    # Draw #abe1d6, #f2f0dd and #f6d0a3 areas to quickly assess relative quality.
     if filter != 'all':
         fig.update_layout(shapes=[
             dict(
                 type= 'rect',
                 yref= 'paper', y0=0, y1=50,
                 xref= 'x', x0=lowcut, x1=highcut,
-                fillcolor = 'yellow',
+                fillcolor = settings['colorscheme']['neutralcolor'],
                 line_width = 0,
-                opacity=0.2,
+                opacity=1,
                 layer='below'
             ),
             dict(
@@ -54,7 +57,7 @@ def style_histo(fig, filter, column_name, lowcut, highcut, min_pg, max_pg, newes
                 xref= 'x', x0=min_pg//divisor*divisor, x1= lowcut,
                 fillcolor = lowcolor,
                 line_width = 0,
-                opacity=0.2,
+                opacity=1,
                 layer='below'
             ),
             dict(
@@ -63,7 +66,7 @@ def style_histo(fig, filter, column_name, lowcut, highcut, min_pg, max_pg, newes
                 xref= 'x', x0=highcut, x1=max_pg//divisor*divisor+divisor,
                 fillcolor = highcolor,
                 line_width = 0,
-                opacity=0.2,
+                opacity=1,
                 layer='below'
             ),
             dict(
@@ -83,11 +86,11 @@ def style_histo(fig, filter, column_name, lowcut, highcut, min_pg, max_pg, newes
 def style_dateplot(fig, filter, column_name, lowcut, highcut, min_pg, max_pg, divisor, reverse=False):
 
     if reverse == True:
-        highcolor = 'red'
-        lowcolor = 'green'
+        highcolor = settings['colorscheme']['badcolor']
+        lowcolor = settings['colorscheme']['goodcolor']
     else:
-        highcolor = 'green'
-        lowcolor = 'red'
+        highcolor = settings['colorscheme']['goodcolor']
+        lowcolor = settings['colorscheme']['badcolor']
     
     fig.update_layout(plot_bgcolor='white', 
             margin={'l': 40, 'b': 40, 't': 10, 'r': 0}, 
@@ -113,7 +116,7 @@ def style_dateplot(fig, filter, column_name, lowcut, highcut, min_pg, max_pg, di
 
     fig.update_traces(marker=dict(size=10))
 
-    # Draw green, yellow and red areas to quickly assess relative quality.
+    # Draw #abe1d6, #f2f0dd and #f6d0a3 areas to quickly assess relative quality.
 
     if filter != 'all':
         fig.update_layout(shapes=[
@@ -121,9 +124,10 @@ def style_dateplot(fig, filter, column_name, lowcut, highcut, min_pg, max_pg, di
                 type= 'rect',
                 xref= 'paper', x0=0, x1=1,
                 yref= 'y', y0=lowcut, y1=highcut,
-                fillcolor = 'yellow',
+                fillcolor = settings['colorscheme']['neutralcolor'],
                 line_width = 0,
-                opacity=0.2
+                opacity=1,
+                layer='below'
             ),
             dict(
                 type= 'rect',
@@ -131,7 +135,8 @@ def style_dateplot(fig, filter, column_name, lowcut, highcut, min_pg, max_pg, di
                 yref= 'y', y0=min_pg//divisor*divisor, y1= lowcut,
                 fillcolor = lowcolor,
                 line_width = 0,
-                opacity=0.2
+                opacity=1,
+                layer='below'
             ),
             dict(
                 type= 'rect',
@@ -139,7 +144,8 @@ def style_dateplot(fig, filter, column_name, lowcut, highcut, min_pg, max_pg, di
                 yref= 'y', y0=highcut, y1=max_pg//divisor*divisor+divisor,
                 fillcolor = highcolor,
                 line_width = 0,
-                opacity=0.2
+                opacity=1,
+                layer='below'
             )])
             
     else:
@@ -204,7 +210,7 @@ layout = html.Div([
                     'if': {
                         'column_id': 'ProteinGroups',
                     },
-                    'backgroundColor': 'lightgoldenrodyellow',
+                    'backgroundColor': settings['colorscheme']['neutralcolor'],
                     'color': 'black'
                 },
                 {
@@ -212,7 +218,7 @@ layout = html.Div([
                         'filter_query': '{ProteinGroups} > 5200',
                         'column_id': 'ProteinGroups'
                     },
-                    'backgroundColor': 'lightgreen',
+                    'backgroundColor': settings['colorscheme']['goodcolor'],
                     'color': 'black'
                 },
 
@@ -221,7 +227,7 @@ layout = html.Div([
                         'filter_query': '{ProteinGroups} < 5000',
                         'column_id': 'ProteinGroups'
                     },
-                    'backgroundColor': 'lightpink',
+                    'backgroundColor': settings['colorscheme']['badcolor'],
                     'color': 'black'
                 },
 
@@ -229,7 +235,7 @@ layout = html.Div([
                     'if': {
                         'column_id': 'Peptides',
                     },
-                    'backgroundColor': 'lightgoldenrodyellow',
+                    'backgroundColor': settings['colorscheme']['neutralcolor'],
                     'color': 'black'
                 },
 
@@ -238,7 +244,7 @@ layout = html.Div([
                         'filter_query': '{Peptides} > 25000',
                         'column_id': 'Peptides'
                     },
-                    'backgroundColor': 'lightgreen',
+                    'backgroundColor': settings['colorscheme']['goodcolor'],
                     'color': 'black'
                 },
 
@@ -247,7 +253,7 @@ layout = html.Div([
                         'filter_query': '{Peptides} < 23000',
                         'column_id': 'Peptides'
                     },
-                    'backgroundColor': 'lightpink',
+                    'backgroundColor': settings['colorscheme']['badcolor'],
                     'color': 'black'
                 },
 
@@ -255,7 +261,7 @@ layout = html.Div([
                     'if': {
                         'column_id': 'RetLen',
                     },
-                    'backgroundColor': 'lightgoldenrodyellow',
+                    'backgroundColor': settings['colorscheme']['neutralcolor'],
                     'color': 'black'
                 },
 
@@ -264,7 +270,7 @@ layout = html.Div([
                         'filter_query': '{RetLen} > 22',
                         'column_id': 'RetLen'
                     },
-                    'backgroundColor': 'lightpink',
+                    'backgroundColor': settings['colorscheme']['badcolor'],
                     'color': 'black'
                 },
 
@@ -273,7 +279,7 @@ layout = html.Div([
                         'filter_query': '{RetLen} < 20',
                         'column_id': 'RetLen'
                     },
-                    'backgroundColor': 'lightgreen',
+                    'backgroundColor': settings['colorscheme']['goodcolor'],
                     'color': 'black'
                 }
 
@@ -453,7 +459,7 @@ def update_table(filter):
                         'if': {
                             'column_id': 'ProteinGroups',
                         },
-                        'backgroundColor': 'lightgoldenrodyellow',
+                        'backgroundColor': settings['colorscheme']['neutralcolor'],
                         'color': 'black'
                     },
                     {
@@ -461,7 +467,7 @@ def update_table(filter):
                             'filter_query': '{ProteinGroups} > '+str(tlist[0]),
                             'column_id': 'ProteinGroups'
                         },
-                        'backgroundColor': 'lightgreen',
+                        'backgroundColor': settings['colorscheme']['goodcolor'],
                         'color': 'black'
                     },
 
@@ -470,7 +476,7 @@ def update_table(filter):
                             'filter_query': '{ProteinGroups} < '+str(tlist[1]),
                             'column_id': 'ProteinGroups'
                         },
-                        'backgroundColor': 'lightpink',
+                        'backgroundColor': settings['colorscheme']['badcolor'],
                         'color': 'black'
                     },
 
@@ -478,7 +484,7 @@ def update_table(filter):
                         'if': {
                             'column_id': 'Peptides',
                         },
-                        'backgroundColor': 'lightgoldenrodyellow',
+                        'backgroundColor': settings['colorscheme']['neutralcolor'],
                         'color': 'black'
                     },
 
@@ -487,7 +493,7 @@ def update_table(filter):
                             'filter_query': '{Peptides} > '+str(tlist[2]),
                             'column_id': 'Peptides'
                         },
-                        'backgroundColor': 'lightgreen',
+                        'backgroundColor': settings['colorscheme']['goodcolor'],
                         'color': 'black'
                     },
 
@@ -496,7 +502,7 @@ def update_table(filter):
                             'filter_query': '{Peptides} < '+str(tlist[3]),
                             'column_id': 'Peptides'
                         },
-                        'backgroundColor': 'lightpink',
+                        'backgroundColor': settings['colorscheme']['badcolor'],
                         'color': 'black'
                     },
 
@@ -504,7 +510,7 @@ def update_table(filter):
                         'if': {
                             'column_id': 'RetLen',
                         },
-                        'backgroundColor': 'lightgoldenrodyellow',
+                        'backgroundColor': settings['colorscheme']['neutralcolor'],
                         'color': 'black'
                     },
 
@@ -513,7 +519,7 @@ def update_table(filter):
                             'filter_query': '{RetLen} > '+str(tlist[4]),
                             'column_id': 'RetLen'
                         },
-                        'backgroundColor': 'lightpink',
+                        'backgroundColor': settings['colorscheme']['badcolor'],
                         'color': 'black'
                     },
 
@@ -522,7 +528,7 @@ def update_table(filter):
                             'filter_query': '{RetLen} < '+str(tlist[5]),
                             'column_id': 'RetLen'
                         },
-                        'backgroundColor': 'lightgreen',
+                        'backgroundColor': settings['colorscheme']['goodcolor'],
                         'color': 'black'
                     }
         ]

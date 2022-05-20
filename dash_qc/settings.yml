@@ -1,6 +1,13 @@
 ip: "146.107.176.137"
 port: "8052"
 
+# Colors for good, medium and bad values
+
+colorscheme: 
+  goodcolor: '#abe1d6'
+  neutralcolor: '#f2f0dd'
+  badcolor: '#f6d0a3'
+
 # Thresholds are ordered like this [prot_highcut, prot_lowcut, pept_highcut, pept_lowcut, rt_highcut, rt_lowcut]
 
 # Thresholds for 1cv / 2h:
