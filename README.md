@@ -16,11 +16,15 @@ If you want to deploy in a production environment, e.g. on the web, use Gunicorn
 * Set thresholds for red / yellow / green in a config file. 
  
 ## Screenshots
-### Histogram view
 
-![image](https://user-images.githubusercontent.com/71029831/121012880-76fa3e80-c798-11eb-9f16-c1d73f6f2afc.png)
+### Live View
+![image](https://user-images.githubusercontent.com/71029831/176028472-ca6ed144-c3db-486b-b6b6-7d1b16069636.png)
 
-### Dateplot view
 
-![image](https://user-images.githubusercontent.com/71029831/121012959-9002ef80-c798-11eb-83d6-bfab1154c3e8.png)
+### Explorer
+![image](https://user-images.githubusercontent.com/71029831/176028611-d30e9526-30ea-479f-8419-aa0bf3c40948.png)
+
+
+
+
 
