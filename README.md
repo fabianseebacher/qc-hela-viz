@@ -9,18 +9,21 @@ Optional:
 If you want to deploy in a production environment, e.g. on the web, use Gunicorn/Heroku. 
 
 ## Known issues
-* Color scale in the table is hardcoded for the thresholds for single CV runs. Still need to figure out how to make it adapt to 
 * Dateplots do not always resize correctly. Resizing the window and then maximizing again usually works as a workaround.
 
 ## Future features
 * Set thresholds for red / yellow / green in a config file. 
  
 ## Screenshots
-### Histogram view
 
-![image](https://user-images.githubusercontent.com/71029831/121012880-76fa3e80-c798-11eb-9f16-c1d73f6f2afc.png)
+### Live View
+![image](https://user-images.githubusercontent.com/71029831/176133207-1d714ec5-095e-4d4c-96fb-c928b3049547.png)
 
-### Dateplot view
 
-![image](https://user-images.githubusercontent.com/71029831/121012959-9002ef80-c798-11eb-83d6-bfab1154c3e8.png)
+### Explorer
+![image](https://user-images.githubusercontent.com/71029831/176133608-7ecf01d8-c6c9-4f81-9556-264ee1eb1427.png)
+
+
+
+
 
