@@ -17,11 +17,11 @@ If you want to deploy in a production environment, e.g. on the web, use Gunicorn
 ## Screenshots
 
 ### Live View
-![image](https://user-images.githubusercontent.com/71029831/176132016-2783243f-00eb-40ec-a306-df02ff877497.png)
+![image](https://user-images.githubusercontent.com/71029831/176133207-1d714ec5-095e-4d4c-96fb-c928b3049547.png)
 
 
 ### Explorer
-![image](https://user-images.githubusercontent.com/71029831/176028611-d30e9526-30ea-479f-8419-aa0bf3c40948.png)
+![image](https://user-images.githubusercontent.com/71029831/176133608-7ecf01d8-c6c9-4f81-9556-264ee1eb1427.png)
 
 
 
