@@ -17,7 +17,7 @@ If you want to deploy in a production environment, e.g. on the web, use Gunicorn
 ## Screenshots
 
 ### Live View
-![image](https://user-images.githubusercontent.com/71029831/176131883-1d2dfa20-7778-4782-9b61-fd815b9a2d0b.png)
+![image](https://user-images.githubusercontent.com/71029831/176132016-2783243f-00eb-40ec-a306-df02ff877497.png)
 
 
 ### Explorer
