@@ -9,7 +9,6 @@ Optional:
 If you want to deploy in a production environment, e.g. on the web, use Gunicorn/Heroku. 
 
 ## Known issues
-* Color scale in the table is hardcoded for the thresholds for single CV runs. Still need to figure out how to make it adapt to 
 * Dateplots do not always resize correctly. Resizing the window and then maximizing again usually works as a workaround.
 
 ## Future features
